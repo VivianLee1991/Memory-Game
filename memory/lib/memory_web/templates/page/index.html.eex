@@ -1,3 +1,4 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <div class="row">
   <div class="col">
     <h1 id="index-page">Join a Memory Game</h1>
@@ -15,7 +16,7 @@
         }
       });
     </script>
-    
+    <!-- attribution: https://github.com/Cappuccinuo/memory2/blob/master/lib/memory_web/templates/page/index.html.eex!-->
     <script>
       function enter() {
         let username = $('#user-name').val();

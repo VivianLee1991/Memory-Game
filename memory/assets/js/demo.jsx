@@ -36,22 +36,29 @@ class Demo extends React.Component {
 
   // update the state of class Demo.
   gotView(view) {
-    console.log("New view");
-    this.setState(view.game)
+    this.setState(view.game);
+    console.log("New view", this.state.isLock);
   }
 
   guess(index) {
-    this.channel.push("guess", {card: index})
-        .receive("ok", this.gotView.bind(this));
-
-    if (this.state.isLock == 1) {  // after locking for 1000ms, do the following actions.
-      setTimeout(() => {
-        console.log("send recover");
-        this.channel.push("recover", {card: index})
-            .receive("ok", this.gotView.bind(this));
-      }, 1000);
+    if (this.state.isLock == 1) {
+      return;
     }
+    this.channel.push("guess", {card: index})
+        .receive("ok", resp => {
+          this.gotView(resp);
+          console.log("Guess", this.state.isLock);
+
+          if (this.state.isLock == 1) {  // after locking for 1000ms, do the following actions.
+            setTimeout(() => {
+              console.log("send recover");
+              this.channel.push("recover", {card: index})
+                  .receive("ok", this.gotView.bind(this));
+            }, 1000);
+          }
+        });
   }
+
  /*
   guess(index) {
     if (this.state.isLock == 1) {
@@ -80,7 +87,7 @@ class Demo extends React.Component {
     return (
       <Card
         value = {this.state.memory[i]}
-        onClick = {() => this.guess(i)}/>
+        onClick = {() => this.guess(i)} />
     );
   }
 
@@ -123,12 +130,6 @@ class Demo extends React.Component {
         <div>
           <Button className="restart" onClick={() =>
             this.restart()}>Restart!</Button>
-        </div>
-        <div>
-          <div>{"memory: " + this.state.memory}</div>
-          <div>{"isLock: " + this.state.isLock}</div>
-          <div>{"isWin: " + this.state.isWin}</div>
-          <div>{"score: " + this.state.score}</div>
         </div>
       </div>
     );

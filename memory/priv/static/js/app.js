@@ -41286,24 +41286,31 @@ var Demo = function (_React$Component) {
   _createClass(Demo, [{
     key: 'gotView',
     value: function gotView(view) {
-      console.log("New view");
       this.setState(view.game);
+      console.log("New view", this.state.isLock);
     }
   }, {
     key: 'guess',
     value: function guess(index) {
       var _this2 = this;
 
-      this.channel.push("guess", { card: index }).receive("ok", this.gotView.bind(this));
-
       if (this.state.isLock == 1) {
-        // after locking for 1000ms, do the following actions.
-        setTimeout(function () {
-          console.log("send recover");
-          _this2.channel.push("recover", { card: index }).receive("ok", _this2.gotView.bind(_this2));
-        }, 1000);
+        return;
       }
+      this.channel.push("guess", { card: index }).receive("ok", function (resp) {
+        _this2.gotView(resp);
+        console.log("Guess", _this2.state.isLock);
+
+        if (_this2.state.isLock == 1) {
+          // after locking for 1000ms, do the following actions.
+          setTimeout(function () {
+            console.log("send recover");
+            _this2.channel.push("recover", { card: index }).receive("ok", _this2.gotView.bind(_this2));
+          }, 1000);
+        }
+      });
     }
+
     /*
      guess(index) {
        if (this.state.isLock == 1) {
@@ -41402,30 +41409,6 @@ var Demo = function (_React$Component) {
                 return _this4.restart();
               } },
             'Restart!'
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          null,
-          _react2.default.createElement(
-            'div',
-            null,
-            "memory: " + this.state.memory
-          ),
-          _react2.default.createElement(
-            'div',
-            null,
-            "isLock: " + this.state.isLock
-          ),
-          _react2.default.createElement(
-            'div',
-            null,
-            "isWin: " + this.state.isWin
-          ),
-          _react2.default.createElement(
-            'div',
-            null,
-            "score: " + this.state.score
           )
         )
       );
